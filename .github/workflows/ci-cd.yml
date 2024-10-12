@@ -24,7 +24,7 @@ jobs:
       run: docker build -t ghcr.io/kingshadie/kubernetes-cicd-deployment:latest .
 
     - name: Push Docker image
-      run: docker push ghcr.io/kingshadie/Kubernetes-CICD-Deployment/flask-app:latest
+      run: docker push ghcr.io/kingshadie/kubernetes-cicd-deployment:latest
 
 
   deploy:
