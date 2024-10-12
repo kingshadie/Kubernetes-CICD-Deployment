@@ -5,6 +5,11 @@ on:
     branches:
       - main  # Adjust if using a different branch
 
+
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
