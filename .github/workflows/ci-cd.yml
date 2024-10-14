@@ -3,27 +3,23 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Adjust if using a different branch
-
-permissions:
-  packages: write
-  contents: read
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Log in to GitHub Packages
-        run: echo ${{ secrets.KUBE_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Log in to GitHub Packages
+      run: echo ${{ secrets.KUBE_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image
-        run: docker build -t ghcr.io/kingshadie/kubernetes-cicd-deployment:latest .
+    - name: Build Docker image
+      run: docker build -t ghcr.io/kingshadie/kubernetes-cicd-deployment:latest .
 
-      - name: Push Docker image
-        run: docker push ghcr.io/kingshadie/kubernetes-cicd-deployment:latest
+    - name: Push Docker image
+      run: docker push ghcr.io/kingshadie/kubernetes-cicd-deployment:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -33,13 +29,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: List files
-        run: ls -R
-
-      - name: Set up Kubernetes
+      - name: Set up Kubernetes for Kind
         run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          kind create cluster --name kind
+          set KUBECONFIG="$(kind get kubeconfig-path --name=kind)"
+
+      - name: Test Kubernetes connection
+        run: kubectl cluster-info
 
       - name: Apply Kubernetes configurations
         run: |
